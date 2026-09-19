@@ -46,6 +46,10 @@ MapMemoryNode::MapMemoryNode()
       std::placeholders::_1));
   map_pub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/map", 10);
 
+  nav_msgs::msg::OccupancyGrid initial_map = map_memory_->to_message();
+  initial_map.header.stamp = this->now();
+  map_pub_->publish(initial_map);
+
   const double frequency = std::max(update_frequency, 0.001);
   const int period_ms = static_cast<int>(std::lround(1000.0 / frequency));
   timer_ = this->create_wall_timer(
@@ -85,15 +89,14 @@ void MapMemoryNode::odom_callback(
 
 void MapMemoryNode::update_map()
 {
-  if (!should_update_map_ || !costmap_updated_ || !have_pose_) {
-    return;
+  if (should_update_map_ && costmap_updated_ && have_pose_) {
+    map_memory_->integrate(latest_costmap_, robot_x_, robot_y_, robot_yaw_);
+    should_update_map_ = false;
   }
 
-  map_memory_->integrate(latest_costmap_, robot_x_, robot_y_, robot_yaw_);
   nav_msgs::msg::OccupancyGrid message = map_memory_->to_message();
   message.header.stamp = this->now();
   map_pub_->publish(message);
-  should_update_map_ = false;
 }
 
 double MapMemoryNode::yaw_from_quaternion(

@@ -57,9 +57,6 @@ ROBOT_IMAGE=${ROBOT_IMAGE:-"$REGISTRY_URL/robot"}
 ## --------------------------- Ports ------------------------------
 
 BASE_PORT=${BASE_PORT:-$(($(id -u)*20))}
-if [ "$BASE_PORT" -lt 1024 ]; then
-    BASE_PORT=20000
-fi
 FOXGLOVE_BRIDGE_PORT=${FOXGLOVE_BRIDGE_PORT:-$((BASE_PORT++))}
 GAZEBO_PORT=${GAZEBO_PORT:-$((BASE_PORT++))}
 

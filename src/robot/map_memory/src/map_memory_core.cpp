@@ -71,7 +71,7 @@ void MapMemoryCore::integrate(
         static_cast<std::size_t>(grid_y) *
           static_cast<std::size_t>(width_) +
         static_cast<std::size_t>(grid_x);
-      grid_[global_index] = cost;
+      grid_[global_index] = std::max(grid_[global_index], cost);
     }
   }
 }
